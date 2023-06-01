@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"flag"
+	"fmt"
 	"log"
 	"telegram-bot/client"
 	event_consumer "telegram-bot/consumer/event-consumer"
@@ -11,12 +13,13 @@ import (
 
 const batchSize = 1000
 
+//var tkn string = "6171814935:AAEGumrFAw42zqPdnkfcTcNzyvPQbXHNoN4"
 func main() {
-	//token, err := token()
-	//if err != nil {
-	//	log.Fatal(err.Error())
-	//}
-	token := "6171814935:AAEGumrFAw42zqPdnkfcTcNzyvPQbXHNoN4"
+	token, err := token()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
 	Client := client.NewClient("api.telegram.org", token)
 	s, err := storage.NewStorage("data")
 	if err != nil {
@@ -35,13 +38,13 @@ func main() {
 	}
 }
 
-//func token() (string, error) {
-//	token := flag.String("tg-bot-token", "", "token for the telegram bot access")
-//	flag.Parse()
-//
-//	if *token == "" {
-//		return "", fmt.Errorf("token is not specified")
-//	}
-//
-//	return *token, nil
-//}
+func token() (string, error) {
+	token := flag.String("tg-bot-token", "", "token for the telegram bot access")
+	flag.Parse()
+
+	if *token == "" {
+		return "", fmt.Errorf("token is not specified")
+	}
+
+	return *token, nil
+}
