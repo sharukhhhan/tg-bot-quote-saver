@@ -31,3 +31,15 @@ type KeyboardButton struct {
 type ReplyKeyboardMarkup struct {
 	Keyboard [][]KeyboardButton `json:"keyboard"`
 }
+
+func NewReplyKeyboardMarkup(keyboard [][]KeyboardButton) *ReplyKeyboardMarkup {
+	return &ReplyKeyboardMarkup{Keyboard: keyboard}
+}
+
+type ReplyKeyboardRemove struct {
+	RemoveKeyboard bool `json:"remove_keyboard"`
+}
+
+func NewReplyKeyboardRemove(removeKeyboard bool) *ReplyKeyboardRemove {
+	return &ReplyKeyboardRemove{RemoveKeyboard: removeKeyboard}
+}

@@ -1,10 +1,12 @@
 package main
 
 import (
+	"context"
 	"log"
 	"telegram-bot/client"
 	event_consumer "telegram-bot/consumer/event-consumer"
 	"telegram-bot/events"
+	"telegram-bot/storage"
 )
 
 const batchSize = 1000
@@ -14,9 +16,17 @@ func main() {
 	//if err != nil {
 	//	log.Fatal(err.Error())
 	//}
-	token := "5903539225:AAG_743NMK4eSHOQu0d96HhBaE1t7upi8mc"
+	token := "6171814935:AAEGumrFAw42zqPdnkfcTcNzyvPQbXHNoN4"
 	Client := client.NewClient("api.telegram.org", token)
-	eventProcessor := events.NewHandler(Client)
+	s, err := storage.NewStorage("data")
+	if err != nil {
+		log.Fatal("can't connect to storage: ", err)
+	}
+	if err := s.Init(context.TODO()); err != nil {
+		log.Fatal("can't init the storage: ", err)
+	}
+
+	eventProcessor := events.NewHandler(Client, s)
 
 	log.Println("service started")
 	consumer := event_consumer.NewConsumer(eventProcessor, eventProcessor, batchSize)

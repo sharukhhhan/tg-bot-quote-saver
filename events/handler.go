@@ -4,19 +4,23 @@ import (
 	"errors"
 	"fmt"
 	"telegram-bot/client"
+	"telegram-bot/storage"
 )
 
 type Handler struct {
-	tgClient *client.Client
-	offset   int
+	TgClient         *client.Client
+	Storage          *storage.Storage
+	Offset           int
+	SelectedCategory map[int]string
+	CommandType      string
 }
 
-func NewHandler(tgClient *client.Client) *Handler {
-	return &Handler{tgClient: tgClient}
+func NewHandler(tgClient *client.Client, storage *storage.Storage) *Handler {
+	return &Handler{TgClient: tgClient, Storage: storage}
 }
 
 func (h *Handler) Fetch(limit int) ([]Event, error) {
-	updates, err := h.tgClient.Updates(h.offset, limit)
+	updates, err := h.TgClient.Updates(h.Offset, limit)
 	if err != nil {
 		return nil, fmt.Errorf("can't get events: %w", err)
 	}
@@ -31,7 +35,7 @@ func (h *Handler) Fetch(limit int) ([]Event, error) {
 		result = append(result, convertToEvent(upd))
 	}
 
-	h.offset = updates[len(updates)-1].ID + 1
+	h.Offset = updates[len(updates)-1].ID + 1
 	return result, nil
 }
 

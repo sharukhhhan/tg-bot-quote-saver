@@ -45,17 +45,25 @@ func (c *Client) Updates(offset, limit int) ([]Updates, error) {
 	return response.Result, nil
 }
 
-func (c *Client) SendMessage(chatId int, text string, markup ReplyKeyboardMarkup) error {
+func (c *Client) SendMessage(chatId int, text string, markup *ReplyKeyboardMarkup, markupRemove *ReplyKeyboardRemove) error {
 	query := url.Values{}
 	query.Add("chat_id", strconv.Itoa(chatId))
 	query.Add("text", text)
-	markupJSON, err := json.Marshal(markup)
-	if err != nil {
-		return fmt.Errorf("can't marshal markup: %w", err)
+	if markupRemove.RemoveKeyboard != true {
+		markupJSON, err := json.Marshal(markup)
+		if err != nil {
+			return fmt.Errorf("can't marshal markup: %w", err)
+		}
+		query.Add("reply_markup", string(markupJSON))
+	} else {
+		markupJSON, err := json.Marshal(markupRemove)
+		if err != nil {
+			return fmt.Errorf("can't marshal markup: %w", err)
+		}
+		query.Add("reply_markup", string(markupJSON))
 	}
-	query.Add("keyboard", string(markupJSON))
 	log.Println(query)
-	_, err = c.makeRequests("sendMessage", query)
+	_, err := c.makeRequests("sendMessage", query)
 	if err != nil {
 		return fmt.Errorf("can't send message: %w", err)
 	}
